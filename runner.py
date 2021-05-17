@@ -46,10 +46,13 @@ def execute(event):
         print("Done")
         # Evaluate		  
         score = model.evaluate(x_test, y_test, batch_size=batch_size)
+        count = 0
         for lay in layers:
+            count += 1
             if len(lay) >= 3:
-                mlflow.log_param(lay[0],"Layer {0} com profundidade {1} e ativação {2}".format(lay[0], lay[1], lay[2]))
-            mlflow.log_param(lay[0],"Layer {0} com profundidade {1}".format(lay[0], lay[1]))
+                mlflow.log_param(str(count) + "_" + lay[0],"Layer {0} com profundidade {1} e ativação {2}".format(lay[0], lay[1], lay[-1]))
+            else: 
+                mlflow.log_param(str(count) + "_" + lay[0],"Layer {0} com profundidade {1}".format(lay[0], lay[1]))
         mlflow.log_metric("ScoreX", score[0])
         mlflow.log_metric("ScoreY", score[1])
 
@@ -78,8 +81,6 @@ def ker_lay_str(lType: str, depth: int,  input_dim: int = None, activation: str 
     return [lType, depth, activation]
 
 if __name__ == "__main__":
-    payloads_list = []  # MY PAYLOADS LIST
-
     # Variáveis compartilhadas por todos os experimentos (É possível configurá-los individualmente, mas isso facilita)
     master_ip = "http://3.134.91.146:5000"
     experiment_name = "mlflow_experiment"
@@ -101,6 +102,6 @@ if __name__ == "__main__":
     # // ------------------------------------------------ //
 
     start = time.perf_counter()
-    lambda_responses = execute(payloads_list)
+    lambda_responses = execute(payload)
     print(lambda_responses)
-    print(f"Tempo total de execução: {time.perf_counter()-start}\nNúmero de execuções: {len(payloads_list)}")
+    print(f"Tempo total de execução: {time.perf_counter()-start}\n")
