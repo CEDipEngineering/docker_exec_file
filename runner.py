@@ -4,9 +4,11 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 import mlflow
 import time
+import os
 
 def execute(event):
 
+    # Using os.getenv() is best, because it returns None if the environment variable is not set, instead of crashing.
     mlflow_experiment = event["experiment_name"]
     mlflow_master_ip = event["master_ip"]
 
@@ -81,27 +83,12 @@ def ker_lay_str(lType: str, depth: int,  input_dim: int = None, activation: str 
     return [lType, depth, activation]
 
 if __name__ == "__main__":
-    # Variáveis compartilhadas por todos os experimentos (É possível configurá-los individualmente, mas isso facilita)
-    master_ip = "http://3.134.91.146:5000"
-    experiment_name = "mlflow_experiment"
-
-
-    # Adição de experimentos à lista. Caso deseje usar um tipo de layer ou função de ativação diferente, 
-    # verifique que ker_lay_str() é capaz de converter isso, e que o código do Lambda é capaz de parsear isso de volta. 
-    
-    # Bloco para copiar e colar para adicionar novos experimentos:
-    payload = {"layers":[ker_lay_str("Dense", 64, 20, "relu"), 
-                ker_lay_str("Dropout", 0.5), 
-                ker_lay_str("Dense", 64, "relu"), 
-                ker_lay_str("Dropout", 0.5), 
-                ker_lay_str("Dense", 1, "sigmoid")],
-                "epochs":3,
-                "batch_size":128,
-                "experiment_name":experiment_name,
-                "master_ip": master_ip}
-    # // ------------------------------------------------ //
-
-    start = time.perf_counter()
+    payload = {"layers":os.getenv("layers"),
+                "epochs":os.getenv("epochs"),
+                "batch_size":os.getenv("batch_size"),
+                "experiment_name":os.getenv("experiment_name"),
+                "master_ip":os.getenv("master_ip")}
+    # start = time.perf_counter()
     lambda_responses = execute(payload)
-    print(lambda_responses)
-    print(f"Tempo total de execução: {time.perf_counter()-start}\n")
+    # print(lambda_responses)
+    # print(f"Tempo total de execução: {time.perf_counter()-start}\n")
