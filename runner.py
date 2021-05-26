@@ -32,8 +32,12 @@ def execute(event):
 
         # Build a model
         model = Sequential()
-        for i in layers:
-            model.add(parse_layer(i))
+        for i in range(len(layers)):
+            if i == 0:
+                # Tratando o caso de input layer
+                model.add((layers[0][0],layers[0][1], layers[0][2], 20))
+                continue
+            model.add(parse_layer(layers[i]))
 
         # Configure the learner
         model.compile(loss='binary_crossentropy',
@@ -83,7 +87,8 @@ def ker_lay_str(lType: str, depth: int,  input_dim: int = None, activation: str 
     return [lType, depth, activation]
 
 if __name__ == "__main__":
-    payload = {"layers":os.getenv("layers"),
+    layers = [(t,s,k) for t,s,k in zip(os.getenv("layersTypes").split(), os.getenv("layersSizes").split(), os.getenv("layersActivations").split())]
+    payload = {"layers":layers,
                 "epochs":os.getenv("epochs"),
                 "batch_size":os.getenv("batch_size"),
                 "experiment_name":os.getenv("experiment_name"),
@@ -92,3 +97,4 @@ if __name__ == "__main__":
     lambda_responses = execute(payload)
     # print(lambda_responses)
     # print(f"Tempo total de execução: {time.perf_counter()-start}\n")
+    
