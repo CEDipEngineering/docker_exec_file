@@ -33,10 +33,6 @@ def execute(event):
         # Build a model
         model = Sequential()
         for i in range(len(layers)):
-            if i == 0:
-                # Tratando o caso de input layer
-                model.add((layers[0][0],layers[0][1], layers[0][2], 20))
-                continue
             model.add(parse_layer(layers[i]))
 
         # Configure the learner
@@ -72,11 +68,11 @@ def execute(event):
 # (Layer Type, depth, activation, input_dim)
 def parse_layer(lay):
     if lay[0] == "Dropout":
-        return Dropout(lay[1])
+        return Dropout(float(lay[1]))
     if lay[0] == "Dense":
         if len(lay) == 4:
-            return Dense(lay[1], activation=lay[2], input_dim=lay[3])
-        return Dense(lay[1], activation=lay[2])
+            return Dense(int(lay[1]), activation=lay[2], input_dim=int(lay[3]))
+        return Dense(int(lay[1]), activation=lay[2])
     ## Can add more layer options
 
 def ker_lay_str(lType: str, depth: int,  input_dim: int = None, activation: str = "relu"):
@@ -87,10 +83,24 @@ def ker_lay_str(lType: str, depth: int,  input_dim: int = None, activation: str 
     return [lType, depth, activation]
 
 if __name__ == "__main__":
+    
+
+    # For testing use of environment variables
+    # os.environ["layersTypes"] = "Dense Dropout Dense Dropout Dense"
+    # os.environ["layersSizes"] = "64 0.5 64 0.5 1"
+    # os.environ["layersActivations"] = "relu None relu None sigmoid"
+    # os.environ["epochs"] = "3"
+    # os.environ["batch_size"] = "128"
+    # os.environ["experiment_name"] = "mlflow_experiment_docker"
+    # os.environ["master_ip"] = "http://13.58.92.219:5000"
+    
+    
     layers = [(t,s,k) for t,s,k in zip(os.getenv("layersTypes").split(), os.getenv("layersSizes").split(), os.getenv("layersActivations").split())]
+    # Corrige primeira layer pra indicar input_dim
+    layers[0] = (layers[0][0],layers[0][1], layers[0][2], 20)
     payload = {"layers":layers,
-                "epochs":os.getenv("epochs"),
-                "batch_size":os.getenv("batch_size"),
+                "epochs":int(os.getenv("epochs")),
+                "batch_size":int(os.getenv("batch_size")),
                 "experiment_name":os.getenv("experiment_name"),
                 "master_ip":os.getenv("master_ip")}
     # start = time.perf_counter()
