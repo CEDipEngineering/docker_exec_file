@@ -48,6 +48,8 @@ def execute(event):
         print("Done")
         # Evaluate		  
         score = model.evaluate(x_test, y_test, batch_size=batch_size)
+        
+        print("Logging metrics...")
         count = 0
         for lay in layers:
             count += 1
@@ -57,6 +59,7 @@ def execute(event):
                 mlflow.log_param(str(count) + "_" + lay[0],"Layer {0} com profundidade {1}".format(lay[0], lay[1]))
         mlflow.log_metric("ScoreX", score[0])
         mlflow.log_metric("ScoreY", score[1])
+        print("Logging complete!")
 
     return {
         'statusCode': 200,
@@ -103,6 +106,7 @@ if __name__ == "__main__":
                 "batch_size":int(os.getenv("batch_size")),
                 "experiment_name":os.getenv("experiment_name"),
                 "master_ip":os.getenv("master_ip")}
+    print(f"Payload: {payload}\n")
     # start = time.perf_counter()
     lambda_responses = execute(payload)
     # print(lambda_responses)
