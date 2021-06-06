@@ -105,8 +105,8 @@ if __name__ == "__main__":
     payload = {"layers":layers,
                 "epochs":int(os.getenv("epochs")),
                 "batch_size":int(os.getenv("batch_size")),
-                "experiment_name":os.getenv("experiment_name"),
-                "master_ip":os.getenv("master_ip")}
+                "experiment_name":os.getenv("experiment_name").strip(),
+                "master_ip":os.getenv("master_ip").strip()}
     print(f"Payload: {payload}\n")
     # start = time.perf_counter()
     lambda_responses = execute(payload)
