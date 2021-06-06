@@ -10,9 +10,10 @@ def execute(event):
 
     # Using os.getenv() is best, because it returns None if the environment variable is not set, instead of crashing.
     mlflow_experiment = event["experiment_name"]
-    mlflow_master_ip = event["master_ip"]
-
-    mlflow.set_tracking_uri(mlflow_master_ip)
+    if(event["master_ip"] is not None):
+        mlflow_master_ip = event["master_ip"]
+        mlflow.set_tracking_uri(mlflow_master_ip)
+    
     try:
         experiment_id = mlflow.get_experiment_by_name(mlflow_experiment).experiment_id
     except Exception:
