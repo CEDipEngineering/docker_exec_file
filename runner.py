@@ -20,12 +20,12 @@ def execute(event):
         experiment_id = mlflow.create_experiment(mlflow_experiment)
     with mlflow.start_run(experiment_id=experiment_id) as run:
         
-        print("Parsing event dictionary")
+        # print("Parsing event dictionary")
         layers = event["layers"]
         epochs = event["epochs"]
         batch_size = event["batch_size"]
 
-        print("Started")
+        # print("Started")
         x_train = np.random.random((1000, 20))
         y_train = np.random.randint(2, size=(1000, 1))
         x_test = np.random.random((100, 20))
@@ -42,15 +42,15 @@ def execute(event):
                     metrics=['accuracy'])
 
         # Train
-        print("Training beginning")
+        # print("Training beginning")
         model.fit(x_train, y_train,
                 epochs=epochs,
                 batch_size=batch_size)
-        print("Done")
+        # print("Done")
         # Evaluate		  
         score = model.evaluate(x_test, y_test, batch_size=batch_size)
         
-        print("Logging metrics...")
+        # print("Logging metrics...")
         count = 0
         for lay in layers:
             count += 1
@@ -60,7 +60,7 @@ def execute(event):
                 mlflow.log_param(str(count) + "_" + lay[0],"Layer {0} com profundidade {1}".format(lay[0], lay[1]))
         mlflow.log_metric("ScoreX", score[0])
         mlflow.log_metric("ScoreY", score[1])
-        print("Logging complete!")
+        # print("Logging complete!")
 
     return {
         'statusCode': 200,
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     # os.environ["layersTypes"] = "Dense Dropout Dense Dropout Dense"
     # os.environ["layersSizes"] = "64 0.5 64 0.5 1"
     # os.environ["layersActivations"] = "relu None relu None sigmoid"
-    # os.environ["epochs"] = "3"
+    # os.environ["epochsMLFLOW_TRACKING_URI"] = "3"
     # os.environ["batch_size"] = "128"
     # os.environ["experiment_name"] = "mlflow_experiment_docker"
     # os.environ["master_ip"] = "http://13.58.92.219:5000"
@@ -107,7 +107,7 @@ if __name__ == "__main__":
                 "batch_size":int(os.getenv("batch_size")),
                 "experiment_name":os.getenv("experiment_name").strip(),
                 "master_ip":os.getenv("master_ip").strip()}
-    print(f"Payload: {payload}\n")
+    # print(f"Payload: {payload}\n")
     # start = time.perf_counter()
     lambda_responses = execute(payload)
     # print(lambda_responses)
