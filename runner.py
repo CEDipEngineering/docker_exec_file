@@ -7,7 +7,7 @@ import time
 import os
 
 def execute(event):
-
+    start = time.time() # Store UNIX timestamp at start
     # Using os.getenv() is best, because it returns None if the environment variable is not set, instead of crashing.
     mlflow_experiment = event["experiment_name"]
     if(event["master_ip"] is not None):
@@ -60,6 +60,7 @@ def execute(event):
                 mlflow.log_param(str(count) + "_" + lay[0],"Layer {0} com profundidade {1}".format(lay[0], lay[1]))
         mlflow.log_metric("ScoreX", score[0])
         mlflow.log_metric("ScoreY", score[1])
+        mlflow.log_metric("TimeElapsed(s)", time.time()-start)
         # print("Logging complete!")
 
     return {
@@ -90,13 +91,14 @@ if __name__ == "__main__":
     
 
     # For testing use of environment variables
-    # os.environ["layersTypes"] = "Dense Dropout Dense Dropout Dense"
-    # os.environ["layersSizes"] = "64 0.5 64 0.5 1"
-    # os.environ["layersActivations"] = "relu None relu None sigmoid"
-    # os.environ["epochsMLFLOW_TRACKING_URI"] = "3"
-    # os.environ["batch_size"] = "128"
-    # os.environ["experiment_name"] = "mlflow_experiment_docker"
-    # os.environ["master_ip"] = "http://13.58.92.219:5000"
+    os.environ["layersTypes"] = "Dense Dropout Dense Dropout Dense"
+    os.environ["layersSizes"] = "64 0.5 64 0.5 1"
+    os.environ["layersActivations"] = "relu None relu None sigmoid"
+    os.environ["epochs"] = "3"
+    os.environ["MLFLOW_TRACKING_URI"] = "http://3.143.228.222:5000"
+    os.environ["batch_size"] = "128"
+    os.environ["experiment_name"] = "Random Training"
+    os.environ["master_ip"] = "http://3.143.228.222:5000"
     
     
     layers = [(t,s,k) for t,s,k in zip(os.getenv("layersTypes").split(), os.getenv("layersSizes").split(), os.getenv("layersActivations").split())]
