@@ -91,14 +91,14 @@ if __name__ == "__main__":
     
 
     # For testing use of environment variables
-    os.environ["layersTypes"] = "Dense Dropout Dense Dropout Dense"
-    os.environ["layersSizes"] = "64 0.5 64 0.5 1"
-    os.environ["layersActivations"] = "relu None relu None sigmoid"
-    os.environ["epochs"] = "3"
-    os.environ["MLFLOW_TRACKING_URI"] = "http://3.143.228.222:5000"
-    os.environ["batch_size"] = "128"
-    os.environ["experiment_name"] = "Random Training"
-    os.environ["master_ip"] = "http://3.143.228.222:5000"
+    # os.environ["layersTypes"] = "Dense Dropout Dense Dropout Dense"
+    # os.environ["layersSizes"] = "64 0.5 64 0.5 1"
+    # os.environ["layersActivations"] = "relu None relu None sigmoid"
+    # os.environ["epochs"] = "3"
+    # os.environ["MLFLOW_TRACKING_URI"] = "http://3.143.228.222:5000"
+    # os.environ["batch_size"] = "128"
+    # os.environ["experiment_name"] = "Random Training"
+    # os.environ["master_ip"] = "http://3.143.228.222:5000"
     
     
     layers = [(t,s,k) for t,s,k in zip(os.getenv("layersTypes").split(), os.getenv("layersSizes").split(), os.getenv("layersActivations").split())]
